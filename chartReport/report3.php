@@ -1,16 +1,10 @@
 <?php include(dirname(__FILE__) . "/../layout/headerdemo.php") ?>
 
-<div class="tabs-links header-link fixed-width">
-    <a href="report1.php" class="active">客流分析</a>
-    <a href="drawReport1.php">画像分析</a>
-</div>
-<div class="tabs-links header-link fixed-width child-tabs">
-    <a href="report1.php">客流数据分析</a>
-    <a href="report2.php">新老客户分析</a>
-    <a class="active">滞留数据分析</a>
-</div>
+<?php
+    $initPage = 'a3';//页面
+?>
+<?php include(dirname(__FILE__) . "/../layout/tab_bar.php") ?>
 
-<!--数据搜索表单-->
 <?php include(dirname(__FILE__) . "/../layout/search_box.php") ?>
 
 <div id="main" style="padding: 20px;">
@@ -82,6 +76,17 @@ function drawChart(){
     $(".loader").css("display","block");
     rChart.renderChart(parms,'/used_car/report_n/js/r_report/data/a3_data_day.json');
 }
+$(function(){
+    var myurl = $("#myEvalData").data('modeurl');
+    console.log(myurl['2']);
+    var _today_date = dayfun.gettoday();
+    $('#daytime').datebox('setValue',_today_date);
+    rChart.renderChart({
+        'id': 1,
+        'date_type': 'day',
+        'date_time': _today_date
+    },'/used_car/report_n/js/r_report/data/a3_data_day.json');
+})
 </script>
 
 

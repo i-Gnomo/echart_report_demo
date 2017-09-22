@@ -1,16 +1,10 @@
 <?php include(dirname(__FILE__) . "/../layout/headerdemo.php") ?>
 
-<div class="tabs-links header-link fixed-width">
-    <a href="report1.php">客流分析</a>
-    <a href="drawReport1.php" class="active">画像分析</a>
-</div>
-<div class="tabs-links header-link fixed-width child-tabs">
-    <a href="drawReport1.php">基础画像</a>
-    <a class="active">大数据画像</a>
-    <a href="drawReport3.php">地理画像</a>
-</div>
+<?php
+    $initPage = 'b2';//页面
+?>
+<?php include(dirname(__FILE__) . "/../layout/tab_bar.php") ?>
 
-<!--数据搜索表单-->
 <form class="search-box cod-exist" style="height:30px">
     <input type="hidden" name="id" id="myid" value="1" />
     <span class="field" style="width:100px;text-align:right;padding-right:10px;">搜索条件：</span>
@@ -68,8 +62,6 @@
                 </div>
             </div>
         </div>
-    </div>
-    <div class="section-row">
         <div class="rep-table-list col-3x" style="display: none;">
             <div class="chart_box report-chart-box">
                 <div class="chart-title">金融理财
@@ -100,8 +92,6 @@
                 </div>
             </div>
         </div>
-    </div>
-    <div class="section-row">
         <div class="rep-table-list col-3x" style="display: none;">
             <div class="chart_box report-chart-box">
                 <div class="chart-title">餐饮美食
@@ -135,10 +125,17 @@
     </div>
 </div>
 
+
 <script type="text/javascript" src="<?php echo $staticPath ?>plugin/echarts/echarts.common.min.js?v=<?php echo $version; ?>"></script>
 <script type="text/javascript" src="<?php echo $staticPath ?>js/r_report/macarons.js"></script>
 <script type="text/javascript" src="<?php echo $staticPath ?>js/r_report/combdate.js"></script>
+<!-- <script type="text/javascript">
+$(function(){
+$('#weektime').datebox('setValue', '2017-09-18/2017-09-24');
+})
+</script> -->
 <script type="text/javascript" src="<?php echo $staticPath ?>js/r_report/a5.js"></script>
+
 <script type="text/javascript">
 function drawChart(){
     //id:1
@@ -161,6 +158,18 @@ function drawChart(){
     $(".loader").css("display","block");
     rChart.renderChart(parms,'/used_car/report_n/js/r_report/data/b2_data.json');
 }
+
+$(function(){
+    var myurl = $("#myEvalData").data('modeurl');
+    console.log(myurl['4']);
+    $('#weektime').datebox('showPanel').datebox('panel').find("td.calendar-today").trigger("click");
+    var _today_week = dayfun.getlastweek();
+    rChart.renderChart({
+        'id': 1,
+        'date_type': 'week',
+        'date_time': _today_week
+    },'/used_car/report_n/js/r_report/data/b2_data.json');
+})
 </script>
 
 <?php include(dirname(__FILE__) . "/../layout/footerdemo.php") ?>

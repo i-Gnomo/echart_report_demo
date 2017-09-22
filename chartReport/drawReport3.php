@@ -1,16 +1,10 @@
 <?php include(dirname(__FILE__) . "/../layout/headerdemo.php") ?>
 
-<div class="tabs-links header-link fixed-width">
-    <a href="report1.php">客流分析</a>
-    <a href="drawReport1.php" class="active">画像分析</a>
-</div>
-<div class="tabs-links header-link fixed-width child-tabs">
-    <a href="drawReport1.php">基础画像</a>
-    <a href="drawReport2.php">大数据画像</a>
-    <a class="active">地理画像</a>
-</div>
+<?php
+    $initPage = 'b3';//页面
+?>
+<?php include(dirname(__FILE__) . "/../layout/tab_bar.php") ?>
 
-<!--数据搜索表单-->
 <form class="search-box cod-exist" style="height:30px">
     <input type="hidden" name="id" id="myid" value="1" />
     <span class="field" style="width:100px;text-align:right;padding-right:10px;">搜索条件：</span>
@@ -86,6 +80,17 @@ function drawChart(){
     $(".loader").css("display","block");
     rMap.renderMap(parms,'/used_car/report_n/js/r_report/data/b3_data.json');
 }
+$(function(){
+    var myurl = $("#myEvalData").data('modeurl');
+    console.log(myurl['5']);
+    $('#weektime').datebox('showPanel').datebox('panel').find("td.calendar-today").trigger("click");
+    var _today_week = dayfun.getlastweek();
+    rMap.renderMap({
+        'id': 1,
+        'date_type': 'week',
+        'date_time': _today_week
+    },'/used_car/report_n/js/r_report/data/b3_data.json');
+})
 </script>
 
 

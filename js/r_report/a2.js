@@ -37,7 +37,6 @@ var rChart = (function(){
     var getChartData = function(parms,_url,cbk){
         var _url = switchUrl(window.recordTime);
         $.get(_url,function(data){
-            console.log(parms);
             if(_main.length>0){
                 _main.data('chartData',data);
                 cbk && cbk();
@@ -50,7 +49,6 @@ var rChart = (function(){
      * @return {[type]} [description]
      */
     cht.renderChart = function(parms,_url){
-        console.log('render');
         getChartData(parms,_url,function(){
             //console.log(_main.data('chartData'));
             var dataObj = _main.data('chartData');

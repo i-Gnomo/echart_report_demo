@@ -1,16 +1,10 @@
 <?php include(dirname(__FILE__) . "/../layout/headerdemo.php") ?>
 
-<div class="tabs-links header-link fixed-width">
-    <a href="report1.php">客流分析</a>
-    <a href="drawReport1.php" class="active">画像分析</a>
-</div>
-<div class="tabs-links header-link fixed-width child-tabs">
-    <a class="active">基础画像</a>
-    <a href="drawReport2.php">大数据画像</a>
-    <a href="drawReport3.php">地理画像</a>
-</div>
+<?php
+    $initPage = 'b1';//页面
+?>
+<?php include(dirname(__FILE__) . "/../layout/tab_bar.php") ?>
 
-<!--数据搜索表单-->
 <?php include(dirname(__FILE__) . "/../layout/search_box.php") ?>
 
 <div id="main" style="padding: 20px;">
@@ -78,8 +72,6 @@
                 </div>
             </div>
         </div>
-    </div>
-    <div class="section-row">
         <div class="rep-table-list col-3x" style="display: none;">
             <div class="chart_box report-chart-box">
                 <div class="chart-title">城市</div>
@@ -119,6 +111,17 @@ function drawChart(){
     $(".loader").css("display","block");
     rChart.renderChart(parms,'/used_car/report_n/js/r_report/data/b1_data_day.json');
 }
+$(function(){
+    var myurl = $("#myEvalData").data('modeurl');
+    console.log(myurl['3']);
+    var _today_date = dayfun.gettoday();
+    $('#daytime').datebox('setValue',_today_date);
+    rChart.renderChart({
+        'id': 1,
+        'date_type': 'day',
+        'date_time': _today_date
+    },'/used_car/report_n/js/r_report/data/b1_data_day.json');
+})
 </script>
 
 

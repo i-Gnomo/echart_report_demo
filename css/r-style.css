@@ -177,3 +177,11 @@ body {
     -moz-border-radius: 50%;
     -o-border-radius: 50%;
 }
+
+@media (max-width: 960px){
+    .rep-table-list.col-4x,
+    .rep-table-list.col-3x,
+    .rep-table-list.col-2x{
+        width: 50%;
+    }
+}

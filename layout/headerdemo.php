@@ -42,5 +42,6 @@
     <link rel="stylesheet" type="text/css" href="<?php echo $staticPath ?>css/r-style.css?v=<?php echo $version; ?>"/>
     <script src="<?php echo $staticPath ?>js/jquery.min.js?v=<?php echo $version; ?>"></script>
     <script src="<?php echo $staticPath ?>plugin/plugins.min.js?v=<?php echo $version; ?>"></script>
+    <script src="<?php echo $staticPath ?>js/public.core.js"></script>
 </head>
 <body>

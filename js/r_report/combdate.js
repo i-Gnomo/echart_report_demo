@@ -1,18 +1,4 @@
 $(function(){
-    // $.fn.calendar.defaults = {
-    //     width:180,
-    //     height:180,
-    //     fit:!1,
-    //     border:!0,
-    //     firstDay:1,
-    //     weeks:["一", "二", "三", "四", "五", "六", "日"], 
-    //     months:["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"], 
-    //     year:new Date().getFullYear(), 
-    //     month:new Date().getMonth() + 1, 
-    //     current:new Date(), 
-    //     onSelect:function (_6f) {
-    //     }
-    // };
     $.fn.extend({
         setWeekInput: function(){ //获取一周日期
             var _t= $(this),
@@ -53,7 +39,7 @@ $(function(){
                             //console.log(s_day+'-'+e_day);
                             _t.data('mydate',s_day + '/' + e_day);
                             _t.datebox('hidePanel').datebox('setValue', s_day + '/' + e_day);
-                        })
+                        });
 
                     })
             }
@@ -122,12 +108,10 @@ $(function(){
             });
         }
     })
-
     $('.week-comb').setWeekInput();
     $('.month-comb').setMonthInput();
 
 })
-
 
 window.recordTime = 'day';
 $("#shop_date_type").combobox({
@@ -155,4 +139,48 @@ function checkdateType(type){
         }
     return timeBox;
 }
-     
+
+var dayfun = {
+    gettoday: function(){
+        var d = new Date();
+        var year = d.getFullYear();
+        var mon = d.getMonth()+1;
+        var day = d.getDate();
+        var s = year+'-'+(mon<10?('0'+mon):mon)+'-'+(day<10?('0'+day):day);
+        return s;
+    },
+    getBeforeDate: function(d,n){
+        var n = n;
+        d.setDate(d.getDate()-n);
+        var year = d.getFullYear();
+        var mon=d.getMonth()+1;
+        var day=d.getDate();
+        s = year+"-"+(mon<10?('0'+mon):mon)+"-"+(day<10?('0'+day):day);
+        return s;
+    },
+    getAfterDate: function(d,n){
+        var n = n;
+        d.setDate(d.getDate()+n);
+        var year = d.getFullYear();
+        var mon=d.getMonth()+1;
+        var day=d.getDate();
+        s = year+"-"+(mon<10?('0'+mon):mon)+"-"+(day<10?('0'+day):day);
+        return s;
+    },
+    getlastweek: function(){
+        var _this = this;
+        var d = new Date();
+        var _w = d.getDay();
+        var s = _w == 0? 6:(_w - 1);
+        var e = 6;
+        var s = _this.getBeforeDate(d,s)+'/'+_this.getAfterDate(d,e);
+        return s;
+    },
+    getdaymonth: function(){
+        var d = new Date();
+        var year = d.getFullYear();
+        var mon = d.getMonth()+1;
+        var s = year+'-'+(mon<10?('0'+mon):mon);
+        return s;
+    }
+}
