@@ -7,16 +7,16 @@ function switchUrl(type){
     var url = '';
     switch(type){
         case 'day':
-            url = '/used_car/report_n/js/r_report/data/a1_data_day.json';
+            url = _staticPath + 'js/r_report/data/a1_data_day.json';
             break;
         case 'week':
-            url = '/used_car/report_n/js/r_report/data/a1_data_week.json';
+            url = _staticPath + 'js/r_report/data/a1_data_week.json';
             break;
         case 'month':
-            url = '/used_car/report_n/js/r_report/data/a1_data_month.json';
+            url = _staticPath + 'js/r_report/data/a1_data_month.json';
             break;
         default:
-            url = '/used_car/report_n/js/r_report/data/a1_data_day.json';
+            url = _staticPath + 'js/r_report/data/a1_data_day.json';
 
     }
 
@@ -37,8 +37,8 @@ var rChart = (function(){
      * @return {[type]}     [description]
      */
     var getChartData = function(parms,_url,cbk){
-        var _url = switchUrl(window.recordTime);
-        $.get(_url,function(data){
+        // var _url = switchUrl(window.recordTime);
+        $.post(_url,{info:parms},function(data){
             //console.log(data);
             if(_main.length>0){
                 _main.data('chartData',data);
@@ -47,27 +47,44 @@ var rChart = (function(){
         })
     }
 
-    /**
-     * [renderChart 渲染图表数据]
-     * @return {[type]} [description]
-     */
-    cht.renderChart = function(opt,_url){
-        //alert(opt);
-        getChartData(opt,_url,function(){
-            //console.log(_main.data('chartData'));
-            var dataObj = _main.data('chartData');
-            // var dataObj = JSON.parse(_main.data('chartData'));
-            /**
-             * [if status状态为1 渲染图表数据]
-             * @param  {[type]} dataObj.status [description]
-             * @return {[type]}                [description]
-             */
-            if(dataObj.status === 1){
-                setCharts(dataObj.chart_data);
-                setTableList(dataObj.table_data);
-            }
-        })
-    }
+    if(Core.loadUserdata('ereport') == 'y'){
+        /**
+         * [renderChart 渲染图表数据]
+         * @return {[type]} [description]
+         */
+        cht.renderChart = function(opt,_url){
+            //alert(opt);
+            getChartData(opt,_url,function(){
+                //console.log(_main.data('chartData'));
+                // var dataObj = _main.data('chartData');
+                var dataObj = JSON.parse(_main.data('chartData'));
+                /**
+                 * [if status状态为1 渲染图表数据]
+                 * @param  {[type]} dataObj.status [description]
+                 * @return {[type]}                [description]
+                 */
+                if(dataObj.status === 1){
+                    statuMessg.statuSucces();
+                    setCharts(dataObj.chart_data);
+                    setTableList(dataObj.table_data);
+                }else{
+                    statuMessg.statuError(dataObj.message);
+                    $('.chart-main').find('.tbody').html('<p class="no-data">'+dataObj.message+'</p>');
+                }
+            })
+        }
+    }else{
+        cht.renderChart = function(opt,_url){
+            var _url = switchUrl(window.recordTime);
+            $.get(_url,function(data){
+                if(data.status === 1){
+                    statuMessg.statuSucces();
+                    setCharts(data.chart_data);
+                    setTableList(data.table_data);
+                }
+            })
+        }
+    }  
 
     return cht;
 })();
@@ -273,7 +290,9 @@ $.extend({
 })
 
 function setCharts(chartData){
-    //console.log(chartData.data);
+    if(typeof(chartData.data) == 'undefined'){
+        chartData.data = [];
+    }
     //var _data = JSON.stringify();
     var x_Rotate = (window.recordTime == 'day')? 45: 0;
     var _Y_MAX = (function(_data){
@@ -293,12 +312,16 @@ function setCharts(chartData){
 
     var y_max = $.getMaxNumber(_Y_MAX);
         //console.log(y_max);
-        y_max = y_max>250?y_max:250;
+        // y_max = y_max>250?y_max:250;
 
     var Y_Interval = (y_max === 250)?50:get_y_interval(y_max);
 
     function get_y_interval(max){
         var _max = max;
+        if(_max<=100){
+            y_max = _max = Math.ceil(_max/10)*10;
+            return _max/5; 
+        }
         if(_max<1000){
             y_max = _max = Math.ceil(_max/100)*100;
             return _max/5;
@@ -368,4 +391,3 @@ function showChart(){
     $(".rep-table-list,.report-chart-box").show();
     $(".loader").css("display","none");
 }
-

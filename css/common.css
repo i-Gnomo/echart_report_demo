@@ -5602,6 +5602,11 @@ input[type=radio] {
     min-width: 125px
 }
 
+.rep-table-list li h3{
+    margin: 0;
+    font-size: 20px;
+}
+
 .rep-table-list .thead {
     position: relative;
     z-index: 6
@@ -5662,6 +5667,19 @@ i.ask-tip {
     margin-top: 10px;
     margin-left: 5px;
     background-image: url(../img/tip.png);
+    background-position: center center;
+    background-repeat: no-repeat;
+    cursor: pointer
+}
+
+i.ask-tip.white {
+    display: inline-block;
+    vertical-align: top;
+    width: 20px;
+    height: 20px;
+    margin-top: 10px;
+    margin-left: 5px;
+    background-image: url(../img/tip-white.png);
     background-position: center center;
     background-repeat: no-repeat;
     cursor: pointer

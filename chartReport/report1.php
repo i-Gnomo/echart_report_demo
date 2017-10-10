@@ -24,8 +24,8 @@
                 <div class="thead">
                     <ul>
                         <li style="width: 25%;">时间</li>
-                        <li style="width: 25%;">环境客流</li>
-                        <li style="width: 25%;">有效客流</li>
+                        <li style="width: 25%;">环境客流<i class="ask-tip" data-title="盒子收集到的客流数据中，\n统计时间段内，按MAC去重后所得到的客流数"></i></li>
+                        <li style="width: 25%;">有效客流<i class="ask-tip" data-title="在环境客流的基础上：\n1、减去当天停留时间小于1分钟的MAC；\n2、减去当天平均停留时间≥6小时的MAC；\n3、信号强度：＞－85"></i></li>
                         <li style="width: 25%;">性别占比</li>
                     </ul>
                 </div>
@@ -74,11 +74,11 @@ function drawChart(){
 
     $(".rep-table-list,.report-chart-box").hide();
     $(".loader").css("display","block");
-    rChart.renderChart(parms,'/used_car/report_n/js/r_report/data/a1_data_day.json');
+    var myurl = $("#myEvalData").data('modeurl');
+    rChart.renderChart(parms,myurl['0']);
 }
 $(function(){
     var myurl = $("#myEvalData").data('modeurl');
-    console.log(myurl['0']);
     var _today_date = dayfun.gettoday();
     $('#daytime').datebox('setValue',_today_date);
     rChart.renderChart({

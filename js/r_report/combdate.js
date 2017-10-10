@@ -184,3 +184,16 @@ var dayfun = {
         return s;
     }
 }
+
+var statuMessg = {
+    statuError: function(msg){
+        $('.report-chart-box .chart').hide();
+        $('.report-chart-box').find('.no-data').remove();
+        showChart();
+        $('.report-chart-box .chart').before('<p class="no-data">'+msg+'</p>');
+    },
+    statuSucces: function(){
+        $('.report-chart-box .chart').show();
+        $('.report-chart-box').find('.no-data').remove();
+    }
+}

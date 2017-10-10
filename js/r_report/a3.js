@@ -3,22 +3,21 @@ function switchUrl(type){
      * [url 路由 根据天周月数据判断]
      * @type {String}
      */
-    var url = '/pfapi/passenger_flow/retention_data';
-        url = '/used_car/report_n/js/r_report/data/a3_data_day.json';
-    // switch(type){
-    //     case 'day':
-    //         url = '../js/r_report/data/a3_data_day.json';
-    //         break;
-    //     case 'week':
-    //         url = '../js/r_report/data/a3_data_week.json';
-    //         break;
-    //     case 'month':
-    //         url = '../js/r_report/data/a3_data_month.json';
-    //         break;
-    //     default:
-    //         url = '../js/r_report/data/a3_data_day.json';
+    var url = _staticPath + 'js/r_report/data/a3_data_day.json';
+    switch(type){
+        case 'day':
+            url = _staticPath + 'js/r_report/data/a3_data_day.json';
+            break;
+        case 'week':
+            url = _staticPath + 'js/r_report/data/a3_data_week.json';
+            break;
+        case 'month':
+            url = _staticPath + 'js/r_report/data/a3_data_month.json';
+            break;
+        default:
+            url = _staticPath + 'js/r_report/data/a3_data_day.json';
 
-    // }
+    }
     return url;
 }
 
@@ -36,8 +35,8 @@ var rChart = (function(){
      * @return {[type]}     [description]
      */
     var getChartData = function(parms,_url,cbk){
-        var _url = switchUrl(window.recordTime);
-        $.get(_url,function(data){
+        // var _url = switchUrl(window.recordTime);
+        $.post(_url,{info:parms},function(data){
             ////console.log(data);
             if(_main.length>0){
                 _main.data('chartData',data);
@@ -46,29 +45,47 @@ var rChart = (function(){
         })
     }
 
-    /**
-     * [renderChart 渲染图表数据]
-     * @return {[type]} [description]
-     */
-    cht.renderChart = function(parms,_url){
-        getChartData(parms,_url,function(){
-            //console.log(_main.data('chartData'));
-            // var dataObj = JSON.parse(_main.data('chartData'));
-            var dataObj = _main.data('chartData');
-            //console.log(dataObj.status);
-            /**
-             * [if status状态为1 渲染图表数据]
-             * @param  {[type]} dataObj.status [description]
-             * @return {[type]}                [description]
-             */
-            if(dataObj.status === 1){
-                //滞留客流趋势图
-                setCharts(dataObj.chart_data);
-                setTableList(dataObj.table_data);
-            }
-        })
+    if(Core.loadUserdata('ereport') == 'y'){
+        /**
+         * [renderChart 渲染图表数据]
+         * @return {[type]} [description]
+         */
+        cht.renderChart = function(parms,_url){
+            getChartData(parms,_url,function(){
+                //console.log(_main.data('chartData'));
+                var dataObj = JSON.parse(_main.data('chartData'));
+                // var dataObj = _main.data('chartData');
+                //console.log(dataObj.status);
+                /**
+                 * [if status状态为1 渲染图表数据]
+                 * @param  {[type]} dataObj.status [description]
+                 * @return {[type]}                [description]
+                 */
+                if(dataObj.status === 1){
+                    //滞留客流趋势图
+                    statuMessg.statuSucces();
+                    setCharts(dataObj.chart_data);
+                    setTableList(dataObj.table_data);
+                }else{
+                    statuMessg.statuError(dataObj.message);
+                    $('.chart-main').find('.tbody').html('<p class="no-data">'+dataObj.message+'</p>');
+                }
+            })
+        }
+    }else{
+        cht.renderChart = function(opt,_url){
+            var _url = switchUrl(window.recordTime);
+            $.get(_url,function(data){
+                var dataObj = data;
+                if(dataObj.status === 1){
+                    //滞留客流趋势图
+                    statuMessg.statuSucces();
+                    setCharts(dataObj.chart_data);
+                    setTableList(dataObj.table_data);
+                }
+            })
+        }         
     }
-
     return cht;
 })();
 
@@ -101,7 +118,7 @@ $.extend({
                 n = arr[i];
             }
         }
-        ////console.log(n);
+        // console.log(n);
         return n;
     }
 })
@@ -253,6 +270,9 @@ $.extend({
 })
 
 function setCharts(chartData){
+    if(typeof(chartData.data) == 'undefined'){
+        chartData.data = [];
+    }
     var x_Rotate = (window.recordTime == 'day')? 45: 0;
     //console.log(x_Rotate+'-'+window.recordTime);
     var _Y_MAX = (function(_data){
@@ -266,19 +286,18 @@ function setCharts(chartData){
                 group_max.push($.getMaxNumber(temp));
                 ////console.log(temp);
             }
-            //console.log(group_max);
+            // console.log(group_max);
             return group_max;
         })(chartData.data);
 
     var y_max = $.getMaxNumber(_Y_MAX);
-        //console.log(y_max);
-        //y_max = y_max>250?y_max:250;
+        // y_max = y_max>100?y_max:100;
 
     var Y_Interval = get_y_interval(y_max);
-
+    
     function get_y_interval(max){
         var _max = max;
-        if(_max<100){
+        if(_max<=100){
            y_max = _max = Math.ceil(_max/10)*10;
            return _max/5; 
         }

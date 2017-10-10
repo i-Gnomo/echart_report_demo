@@ -3,19 +3,19 @@ function switchUrl(type){
      * [url 路由 根据天周月数据判断]
      * @type {String}
      */
-    var url = '/pfapi/passenger_flow/detail_flow';
+    var url = _staticPath + 'js/r_report/data/a2_data_day.json';
     switch(type){
         case 'day':
-            url = '/used_car/report_n/js/r_report/data/a2_data_day.json';
+            url = _staticPath + 'js/r_report/data/a2_data_day.json';
             break;
         case 'week':
-            url = '/used_car/report_n/js/r_report/data/a2_data_week.json';
+            url = _staticPath + 'js/r_report/data/a2_data_week.json';
             break;
         case 'month':
-            url = '/used_car/report_n/js/r_report/data/a2_data_month.json';
+            url = _staticPath + 'js/r_report/data/a2_data_month.json';
             break;
         default:
-            url = '/used_car/report_n/js/r_report/data/a2_data_day.json';
+            url = _staticPath + 'js/r_report/data/a2_data_day.json';
 
     }
     return url;
@@ -35,8 +35,8 @@ var rChart = (function(){
      * @return {[type]}     [description]
      */
     var getChartData = function(parms,_url,cbk){
-        var _url = switchUrl(window.recordTime);
-        $.get(_url,function(data){
+        // var _url = switchUrl(window.recordTime);
+        $.post(_url,{info:parms},function(data){
             if(_main.length>0){
                 _main.data('chartData',data);
                 cbk && cbk();
@@ -44,47 +44,67 @@ var rChart = (function(){
         })
     }
 
-    /**
-     * [renderChart 渲染图表数据]
-     * @return {[type]} [description]
-     */
-    cht.renderChart = function(parms,_url){
-        getChartData(parms,_url,function(){
-            //console.log(_main.data('chartData'));
-            var dataObj = _main.data('chartData');
-            // var dataObj = JSON.parse(_main.data('chartData'));
+    cht.databaseRender = function(dataObj){
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('myChart'),'macarons');
+        //到店频次
+        myChart.setOption(setCharts(dataObj.ddpc_flow));
 
-            //console.log(dataObj.status);
-            /**
-             * [if status状态为1 渲染图表数据]
-             * @param  {[type]} dataObj.status [description]
-             * @return {[type]}                [description]
-             */
-            if(dataObj.status === 1){
-                // 基于准备好的dom，初始化echarts实例
-                var myChart = echarts.init(document.getElementById('myChart'),'macarons');
-                //到店频次
-                myChart.setOption(setCharts(dataObj.ddpc_flow));
+        var myChart2 = echarts.init(document.getElementById('myChart2'),'macarons');
+        //驻店时长
+        myChart2.setOption(setChartsZd(dataObj.zd_flow));
 
-                var myChart2 = echarts.init(document.getElementById('myChart2'),'macarons');
-                //驻店时长
-                myChart2.setOption(setChartsZd(dataObj.zd_flow));
+        setHbData(dataObj);
 
-                showChart();
-                
+        showChart();
+        
+        myChart.resize();
+        myChart2.resize();
+        setTimeout(function (){
+            window.onresize = function () {
                 myChart.resize();
                 myChart2.resize();
-                setTimeout(function (){
-                    window.onresize = function () {
-                        myChart.resize();
-                        myChart2.resize();
-                    }
-                },200);
-                
             }
-        })
+        },200);
     }
 
+    if(Core.loadUserdata('ereport') == 'y'){
+        /**
+         * [renderChart 渲染图表数据]
+         * @return {[type]} [description]
+         */
+        cht.renderChart = function(parms,_url){
+            getChartData(parms,_url,function(){
+                //console.log(_main.data('chartData'));
+                // var dataObj = _main.data('chartData');
+                var dataObj = JSON.parse(_main.data('chartData'));
+
+                //console.log(dataObj.status);
+                /**
+                 * [if status状态为1 渲染图表数据]
+                 * @param  {[type]} dataObj.status [description]
+                 * @return {[type]}                [description]
+                 */
+                if(dataObj.status === 1){
+                    statuMessg.statuSucces();
+                    cht.databaseRender(dataObj);
+                }else{
+                    statuMessg.statuError(dataObj.message);
+                }
+            })
+        }
+    }else{
+        cht.renderChart = function(opt,_url){
+            var _url = switchUrl(window.recordTime);
+            $.get(_url,function(data){
+                var dataObj = data;
+                if(dataObj.status === 1){
+                    statuMessg.statuSucces();
+                    cht.databaseRender(dataObj);
+                }
+            })
+        }        
+    }  
     return cht;
 })();
 
@@ -151,26 +171,6 @@ $.extend({
                 padding: 5,
                 showTitle: true,
                 feature : {
-                    // mark : {
-                    //     show : true,
-                    //     title : {
-                    //         mark : '辅助线-开关',
-                    //         markUndo : '辅助线-删除',
-                    //         markClear : '辅助线-清空'
-                    //     },
-                    //     lineStyle : {
-                    //         width : 1,
-                    //         color : '#1e90ff',
-                    //         type : 'dashed'
-                    //     }
-                    // },
-                    // dataZoom : {
-                    //     show : true,
-                    //     title : {
-                    //         dataZoom : '区域缩放',
-                    //         dataZoomReset : '区域缩放-后退'
-                    //     }
-                    // },
                     dataView : {
                         show : true,
                         title : '数据视图',
@@ -278,7 +278,7 @@ $.extend({
                         textStyle: {
                             color: '#454545',
                         },
-                        formatter: '{value}'
+                        formatter: '{value}' + opt.yAxis_unit
                     }
                 }
             ],
@@ -311,12 +311,16 @@ function setCharts(chartData){
 
     var y_max = $.getMaxNumber(ddps_data['1']);
         //console.log(y_max);
-        y_max = y_max>250?y_max:250;
+        // y_max = y_max>250?y_max:250;
 
     var Y_Interval = (y_max === 250)?50:get_y_interval(y_max);
 
     function get_y_interval(max){
         var _max = max;
+        if(_max<=100){
+            y_max = _max = Math.ceil(_max/10)*10;
+            return _max/5; 
+        }
         if(_max<1000){
             y_max = _max = Math.ceil(_max/100)*100;
             return _max/5;
@@ -340,6 +344,7 @@ function setCharts(chartData){
         x_rotate: x_Rotate,
         xAxis_data: ddps_data['0'],
         yAxis_name: '人数',
+        yAxis_unit: '',
         yAxis_min: 0,
         yAxis_max: y_max,
         yAxis_interval: Y_Interval,
@@ -347,7 +352,7 @@ function setCharts(chartData){
             {
                 name: '到店频次',
                 type: 'bar',
-                barWidth: '45',
+                barMaxWidth: '100',
                 data: ddps_data['1'],
                 itemStyle: {
                     normal: {
@@ -401,18 +406,19 @@ function setChartsZd(chartData){
                 str += value[0].name + '：' + value[0].value + '%';
             return str;
         },
-        legend_data: ['到店时长'],
+        legend_data: ['驻店时长'],
         x_rotate: x_Rotate,
         xAxis_data: ddps_data['0'],
         yAxis_name: '',
+        yAxis_unit: '%',
         yAxis_min: 0,
         yAxis_max: y_max,
         yAxis_interval: Y_Interval,
         series_array: [
             {
-                name: '到店时长',
+                name: '驻店时长',
                 type: 'bar',
-                barWidth: '45',
+                barMaxWidth: '100',
                 data: ddps_data['1'],
                 itemStyle: {
                     normal: {
@@ -439,3 +445,14 @@ function showChart(){
     $(".loader").css("display","none");
 }
 
+function setHbData(data){
+    var box = $("#hb_box");
+        box.find("li").eq(0).find("h3").text(data['zd_flow']['avg_stay_time']);
+        box.find("li").eq(1).find("h3").text(data['zd_flow']['tc']+'%');
+        box.find("li").eq(2).find("h3").text(data['zd_flow']['sf']+'%');
+
+    var hb_avg = (data['zd_flow']['hb_avg_stay_time_bj']>0?'':'-') + data['zd_flow']['hb_avg_stay_time'];
+        box.find("li").eq(0).find("em").text('环比：'+hb_avg);
+        box.find("li").eq(1).find("em").text('环比：'+data['zd_flow']['hb_tc']+'%');
+        box.find("li").eq(2).find("em").text('环比：'+data['zd_flow']['hb_sf']+'%');
+}

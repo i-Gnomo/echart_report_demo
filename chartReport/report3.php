@@ -70,22 +70,22 @@ function drawChart(){
             'week': '滞留客流趋势图 - 周数据',
             'month': '滞留客流趋势图 - 月数据'
         }
-    $(".chart-title").find("span").text(titleInfo[parms.date_type]);
+    $(".chart-title").text(titleInfo[parms.date_type]);
 
     $(".rep-table-list,.report-chart-box").hide();
     $(".loader").css("display","block");
-    rChart.renderChart(parms,'/used_car/report_n/js/r_report/data/a3_data_day.json');
+    var myurl = $("#myEvalData").data('modeurl');
+    rChart.renderChart(parms,myurl['2']);
 }
 $(function(){
     var myurl = $("#myEvalData").data('modeurl');
-    console.log(myurl['2']);
     var _today_date = dayfun.gettoday();
     $('#daytime').datebox('setValue',_today_date);
     rChart.renderChart({
         'id': 1,
         'date_type': 'day',
         'date_time': _today_date
-    },'/used_car/report_n/js/r_report/data/a3_data_day.json');
+    },myurl['2']);
 })
 </script>
 

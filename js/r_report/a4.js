@@ -3,19 +3,19 @@ function switchUrl(type){
      * [url 路由 根据天周月数据判断]
      * @type {String}
      */
-    var url = '/pfapi/figure/base_data';
+    var url = _staticPath + 'js/r_report/data/b1_data_day.json';
     switch(type){
         case 'day':
-            url = '/used_car/report_n/js/r_report/data/b1_data_day.json';
+            url = _staticPath + 'js/r_report/data/b1_data_day.json';
             break;
         case 'week':
-            url = '/used_car/report_n/js/r_report/data/b1_data_week.json';
+            url = _staticPath + 'js/r_report/data/b1_data_week.json';
             break;
         case 'month':
-            url = '/used_car/report_n/js/r_report/data/b1_data_month.json';
+            url = _staticPath + 'js/r_report/data/b1_data_month.json';
             break;
         default:
-            url = '/used_car/report_n/js/r_report/data/b1_data_day.json';
+            url = _staticPath + 'js/r_report/data/b1_data_day.json';
 
     }
     return url;
@@ -35,8 +35,8 @@ var rChart = (function(){
      * @return {[type]}     [description]
      */
     var getChartData = function(parms,_url,cbk){
-        var _url = switchUrl(window.recordTime);
-        $.get(_url,function(data){
+        // var _url = switchUrl(window.recordTime);
+        $.post(_url,{info:parms},function(data){
             ////console.log(data);
             if(_main.length>0){
                 _main.data('chartData',data);
@@ -45,28 +45,44 @@ var rChart = (function(){
         })
     }
 
-    /**
-     * [renderChart 渲染图表数据]
-     * @return {[type]} [description]
-     */
-    cht.renderChart = function(parms,_url){
-        getChartData(parms,_url,function(){
-            //console.log(_main.data('chartData'));
-            // var dataObj = JSON.parse(_main.data('chartData'));
-            var dataObj = _main.data('chartData');
-            /**
-             * [if status状态为1 渲染图表数据]
-             * @param  {[type]} dataObj.status [description]
-             * @return {[type]}                [description]
-             */
-            if(dataObj.status === 1){
-                //基础画像 男女比例
-                //console.log(dataObj.figure_data);
-                setCharts(dataObj.figure_data);
-            }
-        })
+    if(Core.loadUserdata('ereport') == 'y'){
+        /**
+         * [renderChart 渲染图表数据]
+         * @return {[type]} [description]
+         */
+        cht.renderChart = function(parms,_url){
+            getChartData(parms,_url,function(){
+                //console.log(_main.data('chartData'));
+                var dataObj = JSON.parse(_main.data('chartData'));
+                // var dataObj = _main.data('chartData');
+                /**
+                 * [if status状态为1 渲染图表数据]
+                 * @param  {[type]} dataObj.status [description]
+                 * @return {[type]}                [description]
+                 */
+                if(dataObj.status === 1){
+                    //基础画像 男女比例
+                    //console.log(dataObj.figure_data);
+                    statuMessg.statuSucces();
+                    setCharts(dataObj.figure_data);
+                }else{
+                    statuMessg.statuError(dataObj.message);
+                }
+            })
+        }
+    }else{
+        cht.renderChart = function(opt,_url){
+            var _url = switchUrl(window.recordTime);
+            $.get(_url,function(data){
+                var dataObj = data;
+                if(dataObj.status === 1){
+                    statuMessg.statuSucces();
+                    setCharts(dataObj.figure_data);
+                }
+            })
+        }  
     }
-
+    
     return cht;
 })();
 

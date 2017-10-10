@@ -29,12 +29,13 @@
     <meta name="format-detection" content="telephone=no"/>
 
     <?php
-    $staticPath = '/used_car/report_n/';//静态文件目录
+    // $staticPath = '/html/report/';//静态文件目录
+    $staticPath = '/used_car/report_n/';
     $version = '1.0.0';
     //$version = floor(time() / 10);//版本号 本地调试时用时间戳 清除静态文件缓存
     ?>
     <script>
-        var _staticPath = '<?php echo $staticPath;?>';
+        const _staticPath = '<?php echo $staticPath;?>';
         var _version = '<?php echo $version;?>';
     </script>
     
@@ -42,6 +43,7 @@
     <link rel="stylesheet" type="text/css" href="<?php echo $staticPath ?>css/r-style.css?v=<?php echo $version; ?>"/>
     <script src="<?php echo $staticPath ?>js/jquery.min.js?v=<?php echo $version; ?>"></script>
     <script src="<?php echo $staticPath ?>plugin/plugins.min.js?v=<?php echo $version; ?>"></script>
+    <script src="http://sales.new4s.com/resource/plugin/layer/layer.js?v=<?php echo $version; ?>"></script>
     <script src="<?php echo $staticPath ?>js/public.core.js"></script>
 </head>
 <body>

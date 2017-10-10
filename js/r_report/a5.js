@@ -3,8 +3,7 @@ function switchUrl(type){
      * [url 路由 根据天周月数据判断]
      * @type {String}
      */
-    var url = '/pfapi/figure/advance_data';
-        url = '/used_car/report_n/js/r_report/data/b2_data.json';
+    var url = _staticPath + 'js/r_report/data/b2_data.json';
     return url;
 }
 
@@ -22,8 +21,8 @@ var rChart = (function(){
      * @return {[type]}     [description]
      */
     var getChartData = function(parms,_url,cbk){
-        var _url = switchUrl(window.recordTime);
-        $.get(_url,function(data){
+        // var _url = switchUrl(window.recordTime);
+        $.post(_url,{info:parms},function(data){
             ////console.log(data);
             if(_main.length>0){
                 _main.data('chartData',data);
@@ -32,27 +31,44 @@ var rChart = (function(){
         })
     }
 
-    /**
-     * [renderChart 渲染图表数据]
-     * @return {[type]} [description]
-     */
-    cht.renderChart = function(parms,_url){
-        getChartData(parms,_url,function(){
-            //console.log(_main.data('chartData'));
-            // var dataObj = JSON.parse(_main.data('chartData'));
-            var dataObj = _main.data('chartData');
-            /**
-             * [if status状态为1 渲染图表数据]
-             * @param  {[type]} dataObj.status [description]
-             * @return {[type]}                [description]
-             */
-            if(dataObj.status === 1){
-                //大数据画像
-                setCharts(dataObj.figure_data);
-            }
-        })
+    if(Core.loadUserdata('ereport') == 'y'){
+        /**
+         * [renderChart 渲染图表数据]
+         * @return {[type]} [description]
+         */
+        cht.renderChart = function(parms,_url){
+            getChartData(parms,_url,function(){
+                //console.log(_main.data('chartData'));
+                var dataObj = JSON.parse(_main.data('chartData'));
+                // var dataObj = _main.data('chartData');
+                /**
+                 * [if status状态为1 渲染图表数据]
+                 * @param  {[type]} dataObj.status [description]
+                 * @return {[type]}                [description]
+                 */
+                if(dataObj.status === 1){
+                    //大数据画像
+                    statuMessg.statuSucces();
+                    setCharts(dataObj.figure_data);
+                }else{
+                    statuMessg.statuError(dataObj.message);
+                    showChart();
+                }
+            })
+        }
+    }else{
+        cht.renderChart = function(opt,_url){
+            var _url = switchUrl(window.recordTime);
+            $.get(_url,function(data){
+                var dataObj = data;
+                if(dataObj.status === 1){
+                    statuMessg.statuSucces();
+                    setCharts(dataObj.figure_data);
+                }
+            })
+        }
     }
-
+    
     return cht;
 })();
 

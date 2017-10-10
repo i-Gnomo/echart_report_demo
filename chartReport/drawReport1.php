@@ -109,18 +109,18 @@ function drawChart(){
 
     $(".rep-table-list,.report-chart-box").hide();
     $(".loader").css("display","block");
-    rChart.renderChart(parms,'/used_car/report_n/js/r_report/data/b1_data_day.json');
+    var myurl = $("#myEvalData").data('modeurl');
+    rChart.renderChart(parms,myurl['3']);
 }
 $(function(){
     var myurl = $("#myEvalData").data('modeurl');
-    console.log(myurl['3']);
     var _today_date = dayfun.gettoday();
     $('#daytime').datebox('setValue',_today_date);
     rChart.renderChart({
         'id': 1,
         'date_type': 'day',
         'date_time': _today_date
-    },'/used_car/report_n/js/r_report/data/b1_data_day.json');
+    },myurl['3']);
 })
 </script>
 

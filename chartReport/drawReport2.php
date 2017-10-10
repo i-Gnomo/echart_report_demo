@@ -156,19 +156,19 @@ function drawChart(){
         }
     $(".rep-table-list,.report-chart-box").hide();
     $(".loader").css("display","block");
-    rChart.renderChart(parms,'/used_car/report_n/js/r_report/data/b2_data.json');
+    var myurl = $("#myEvalData").data('modeurl');
+    rChart.renderChart(parms,myurl['4']);
 }
 
 $(function(){
     var myurl = $("#myEvalData").data('modeurl');
-    console.log(myurl['4']);
     $('#weektime').datebox('showPanel').datebox('panel').find("td.calendar-today").trigger("click");
     var _today_week = dayfun.getlastweek();
     rChart.renderChart({
         'id': 1,
         'date_type': 'week',
         'date_time': _today_week
-    },'/used_car/report_n/js/r_report/data/b2_data.json');
+    },myurl['4']);
 })
 </script>
 

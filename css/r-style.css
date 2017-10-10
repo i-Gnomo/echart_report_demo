@@ -185,3 +185,14 @@ body {
         width: 50%;
     }
 }
+
+.layui-layer-btn .gray-btn{
+    border-color: #dedede!important;
+    background-color: #f1f1f1!important;
+    color: #333!important;
+}
+.layui-layer-btn .blue-btn{
+    border-color: #4898d5;
+    background-color: #2e8ded;
+    color: #fff;
+}
